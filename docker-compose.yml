@@ -1,0 +1,75 @@
+services:
+
+  redis-broker:
+    image: redis:7
+    volumes:
+      - ./redis/redis.conf:/usr/local/etc/redis/redis.conf
+    networks:
+      - app-network
+
+  camera-conection:
+    build:
+      context: ./project
+      dockerfile: Dockerfile
+    command: python3 camera_conection.py
+    volumes:
+      - ./project:/opt/
+    networks:
+      - app-network
+    depends_on:
+      - redis-broker
+
+  workers-api:
+    build:
+        context: ./project
+        dockerfile: Dockerfile
+    command: uvicorn workers_api:app --reload --host 0.0.0.0 --port 8000
+    volumes:
+      - ./project:/opt/
+    expose:
+      - 8000
+    ports:
+      - '8000:8000'
+    networks:
+      - app-network
+    depends_on:
+      - redis-broker
+  
+  workers:
+    build:
+      context: ./project
+      dockerfile: Dockerfile
+    deploy:
+      mode: replicated
+      replicas: 1
+    command: celery -A workers_broker_app.celery_app worker --loglevel=INFO --purge --concurrency=1
+    volumes:
+      - ./project:/opt/
+    depends_on:
+      - workers-api
+    networks:
+      - app-network
+  
+  dashboard:
+    build:
+      context: ./project
+      dockerfile: Dockerfile
+    command: bash -c "sleep 10; celery -A workers_broker_app flower --loglevel=info --url_prefix=dashboard;"
+    expose:
+      - 5555
+    ports:
+      - '5555:5555'
+    volumes:
+      - ./project:/opt/
+    depends_on:
+      - workers
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  db-data:
+  app-volume:
