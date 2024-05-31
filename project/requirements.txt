@@ -1,0 +1,8 @@
+fastapi
+uvicorn
+celery
+redis
+flower
+requests
+numpy
+opencv-python
