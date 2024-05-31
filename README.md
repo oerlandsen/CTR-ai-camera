@@ -6,7 +6,7 @@
 - to stop and delete the containers `docker compose down`
 
 # How to use it
-- post http://localhost:8000/add/1/4  1 and 4 are any numbers
+- post http://localhost:8000/add/1/4  1 and 4 can be any numbers
 - get http://localhost:8000/id_of_the_job
 - you can check the logs in the docker desktop app
 
