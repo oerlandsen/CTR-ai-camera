@@ -7,7 +7,6 @@ app = FastAPI()
 def read_root():
     return {"status": True}
 
-
 # Example of sending a task to the worker and then getting the result
 
 @app.post("/add/{x}/{y}")
