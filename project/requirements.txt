@@ -6,3 +6,6 @@ flower
 requests
 numpy
 opencv-python
+shapely
+ultralytics
+python-dotenv

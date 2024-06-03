@@ -1,10 +1,16 @@
+import os
 from celery import Celery
-from camera_records import camera_record
+from camera_records import CameraRecords
+from telegram_manager import TelegramManager
+from dotenv import load_dotenv
 
-CELERY_BROKER_URL='redis://redis-broker:6379/0'
-CELERY_RESULT_BACKEND='redis://redis-broker:6379/0'
+load_dotenv()
 
-celery_app = Celery('CTR-cameras', broker=CELERY_BROKER_URL, backend=CELERY_RESULT_BACKEND)
+celery_app = Celery(
+    'CTR-cameras', 
+    broker=os.environ.get("CELERY_BROKER_URL"), 
+    backend=os.environ.get("CELERY_RESULT_BACKEND")
+)
 
 celery_app.conf.update(
     accept_content=['application/json'],
@@ -13,12 +19,23 @@ celery_app.conf.update(
     timezone='America/Santiago',
 )
 
+CAMERAS = {
+    101: {
+        "camera_record": CameraRecords(),
+        "telegram_manager": TelegramManager(
+            message="Alert Camera 101: someone is walking outside of the authorized area!",
+            max_frame=20
+        )
+    }
+}
+
 # example of a task
 @celery_app.task
-def add(x, y):
-    # this code doesnt work bc i deleted the singleton of CamerRecords
-    # current_value = camera_record.get_value()
-    # result = current_value + x + y
-    # camera_record.store_result(result)
-    # telegram()this is the result that will be passed to the telegram
-    return result   
+def process_frame(frame_id, frame, camera_id):
+    camera_record = CAMERAS[camera_id]["camera_record"]
+    telegram_manager = CAMERAS[camera_id]["telegram_manager"]
+
+    r = camera_record.add_result(frame_id, frame)
+    telegram_manager.analyze(r)
+
+    return r.alarm
