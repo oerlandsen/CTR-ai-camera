@@ -16,7 +16,9 @@ celery_app.conf.update(
 # example of a task
 @celery_app.task
 def add(x, y):
-    current_value = camera_record.get_value()
-    result = current_value + x + y
-    camera_record.store_result(result)
-    return result
+    # this code doesnt work bc i deleted the singleton of CamerRecords
+    # current_value = camera_record.get_value()
+    # result = current_value + x + y
+    # camera_record.store_result(result)
+    # telegram()this is the result that will be passed to the telegram
+    return result   
