@@ -1,17 +1,9 @@
-import logging
 from shapely.geometry import Point, Polygon
 from ultralytics import YOLO
 import torch
 import numpy as np
 import json
-import cv2
 from PIL import Image
-
-
-
-
-
-logging.basicConfig(level=logging.DEBUG)
 
 
 class AiResult:
@@ -60,10 +52,9 @@ class CameraRecords:
     def add_result(self, id_frame, frame) -> AiResult:
 
         # prediction
-        frame = Image.fromarray(np.array(frame))
-        print(f'frame: {frame}')
+        frame = Image.fromarray(np.array(frame).astype(np.uint8))
         result = self.model.track(frame, persist=True, classes=[0], verbose=False)[0]
-        print(f'result: {result}')
+        
         boxes = result.boxes
         data = boxes.data.cpu().numpy()
         data = data[(data[:,5] > self.min_conf)]
