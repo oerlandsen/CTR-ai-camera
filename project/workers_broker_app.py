@@ -32,6 +32,7 @@ CAMERAS = {
 # example of a task
 @celery_app.task
 def process_frame(frame_id, frame, camera_id):
+    print(f"Processing frame {type(frame)}")
     camera_record = CAMERAS[camera_id]["camera_record"]
     telegram_manager = CAMERAS[camera_id]["telegram_manager"]
 

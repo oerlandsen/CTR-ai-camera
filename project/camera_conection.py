@@ -21,7 +21,7 @@ while cap.isOpened():
         # in production you have to chance the localhost to the container name
         _, buffer = cv2.imencode('.jpg', frame)  # Convert the frame to JPEG format
         frame_file = io.BytesIO(buffer)
-
+        print('before post to workers api')
         # Send the frame as multipart/form-data
         response = requests.post(
             f"http://workers-api:8000/camera/101/frame/{id_frame}", 

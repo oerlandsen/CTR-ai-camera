@@ -20,6 +20,8 @@ services:
       - app-network
     depends_on:
       - redis-broker
+      - workers-api
+      - workers
     environment:
       - URL_RTSP=rtsp://admin:ctr_isp2021@10.240.206.185:554/Streaming/channels/101
 
@@ -62,24 +64,24 @@ services:
       - CELERY_BROKER_URL=redis://redis-broker:6379/0
       - CELERY_RESULT_BACKEND=redis://redis-broker:6379/0
   
-  dashboard:
-    build:
-      context: ./project
-      dockerfile: Dockerfile
-    command: bash -c "sleep 10; celery -A workers_broker_app flower --loglevel=info --url_prefix=dashboard;"
-    expose:
-      - 5555
-    ports:
-      - '5555:5555'
-    volumes:
-      - ./project:/opt/
-    depends_on:
-      - workers
-    networks:
-      - app-network
-    environment:
-      - CELERY_BROKER_URL=redis://redis-broker:6379/0
-      - CELERY_RESULT_BACKEND=redis://redis-broker:6379/0
+  # dashboard:
+  #   build:
+  #     context: ./project
+  #     dockerfile: Dockerfile
+  #   command: bash -c "sleep 10; celery -A workers_broker_app flower --loglevel=info --url_prefix=dashboard;"
+  #   expose:
+  #     - 5555
+  #   ports:
+  #     - '5555:5555'
+  #   volumes:
+  #     - ./project:/opt/
+  #   depends_on:
+  #     - workers
+  #   networks:
+  #     - app-network
+  #   environment:
+  #     - CELERY_BROKER_URL=redis://redis-broker:6379/0
+  #     - CELERY_RESULT_BACKEND=redis://redis-broker:6379/0
 
 networks:
   app-network:
