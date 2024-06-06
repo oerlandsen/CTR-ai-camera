@@ -4,6 +4,10 @@ import torch
 import numpy as np
 import json
 from PIL import Image
+import multiprocessing
+
+
+multiprocessing.set_start_method('spawn')
 
 
 class AiResult:

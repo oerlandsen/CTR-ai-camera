@@ -14,6 +14,7 @@ cap = cv2.VideoCapture(
 )
 
 id_frame = 0
+time.sleep(5)
 while cap.isOpened():
     success, frame = cap.read()
     if success:

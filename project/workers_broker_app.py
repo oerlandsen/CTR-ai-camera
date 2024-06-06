@@ -38,5 +38,8 @@ def process_frame(frame_id, frame, camera_id):
 
     r = camera_record.add_result(frame_id, frame)
     telegram_manager.analyze(r)
-
-    return r.alarm
+    return {
+        "alarm": r.alarm,
+        "frame_id": frame_id,
+        "camera_id": camera_id
+    }

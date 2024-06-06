@@ -53,6 +53,12 @@ services:
     deploy:
       mode: replicated
       replicas: 1
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
     command: celery -A workers_broker_app.celery_app worker --loglevel=INFO --concurrency=1
     volumes:
       - ./project:/opt/
@@ -63,6 +69,8 @@ services:
     environment:
       - CELERY_BROKER_URL=redis://redis-broker:6379/0
       - CELERY_RESULT_BACKEND=redis://redis-broker:6379/0
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=compute,utility
   
   # dashboard:
   #   build:
