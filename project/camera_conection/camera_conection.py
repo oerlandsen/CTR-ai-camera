@@ -14,6 +14,7 @@ cap = cv2.VideoCapture(
 )
 
 id_frame = 0
+time.sleep(5)
 while cap.isOpened():
     success, frame = cap.read()
     if success:
@@ -24,11 +25,12 @@ while cap.isOpened():
         print('before post to workers api')
         # Send the frame as multipart/form-data
         response = requests.post(
-            f"http://workers-api:8000/camera/101/frame/{id_frame}", 
-            files={"frame": frame_file}
+            f"http://producer:8000/camera", 
+            files={"frame": frame_file},
+            data={"camera_id": 101, "frame_id": id_frame}
         )
         print('success')
         id_frame += 1
-        time.sleep(1)
+        time.sleep(0.5)
     else:
         break

@@ -2,7 +2,7 @@ fastapi
 uvicorn
 celery
 redis
-flower
+# flower
 requests
 numpy
 opencv-python

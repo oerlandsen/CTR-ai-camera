@@ -11,27 +11,27 @@ services:
 
   camera-conection:
     build:
-      context: ./project
+      context: ./project/camera_conection
       dockerfile: Dockerfile
     command: python3 camera_conection.py
     volumes:
-      - ./project:/opt/
+      - ./project/camera_conection:/opt/
     networks:
       - app-network
     depends_on:
       - redis-broker
-      - workers-api
+      - producer
       - workers
     environment:
       - URL_RTSP=rtsp://admin:ctr_isp2021@10.240.206.185:554/Streaming/channels/101
 
-  workers-api:
+  producer:
     build:
-        context: ./project
+        context: ./project/producer
         dockerfile: Dockerfile
     command: uvicorn workers_api:app --reload --host 0.0.0.0 --port 8000
     volumes:
-      - ./project:/opt/
+      - ./project/producer:/opt/
     expose:
       - 8000
     ports:
@@ -48,21 +48,29 @@ services:
   
   workers:
     build:
-      context: ./project
+      context: ./project/consumer
       dockerfile: Dockerfile
     deploy:
       mode: replicated
       replicas: 1
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
     command: celery -A workers_broker_app.celery_app worker --loglevel=INFO --concurrency=1
     volumes:
-      - ./project:/opt/
+      - ./project/consumer:/opt/
     depends_on:
-      - workers-api
+      - producer
     networks:
       - app-network
     environment:
       - CELERY_BROKER_URL=redis://redis-broker:6379/0
       - CELERY_RESULT_BACKEND=redis://redis-broker:6379/0
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=compute,utility
   
   # dashboard:
   #   build:

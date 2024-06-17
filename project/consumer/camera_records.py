@@ -4,6 +4,9 @@ import torch
 import numpy as np
 import json
 from PIL import Image
+import torch.multiprocessing as mp
+
+    
 
 
 class AiResult:
@@ -34,6 +37,7 @@ class CameraRecords:
         self.previous_results = {}
 
         # Model
+        mp.set_start_method('spawn', force=True)
         self.model = YOLO('model_files/yolov8l.pt')
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.model = self.model.to(device)
