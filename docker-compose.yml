@@ -26,7 +26,7 @@ services:
     volumes:
       - ./project/camera_conection:/opt/
     networks:
-      - host
+      - app-network
     depends_on:
       - redis-broker
       - producer
@@ -104,8 +104,6 @@ services:
 networks:
   app-network:
     driver: bridge
-  host:
-    external: true
 
 volumes:
   db-data:
