@@ -2,6 +2,15 @@ version: '3'
 
 services:
 
+  vpn-client:
+    image: vpn-client
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - /dev/net/tun
+    network_mode: bridge
+
+
   redis-broker:
     image: redis:7
     volumes:
@@ -17,11 +26,12 @@ services:
     volumes:
       - ./project/camera_conection:/opt/
     networks:
-      - app-network
+      - host
     depends_on:
       - redis-broker
       - producer
       - workers
+      - vpn-client
     environment:
       - URL_RTSP=rtsp://admin:ctr_isp2021@10.240.206.185:554/Streaming/channels/101
 
@@ -94,6 +104,8 @@ services:
 networks:
   app-network:
     driver: bridge
+  host:
+    external: true
 
 volumes:
   db-data:
