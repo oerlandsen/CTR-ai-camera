@@ -1,0 +1,10 @@
+FROM ubuntu:20.04
+
+RUN apt-get update && \
+    apt-get install -y openfortivpn ppp && \
+    apt-get clean
+
+COPY vpn-config.sh /usr/local/bin/vpn-config.sh
+RUN chmod +x /usr/local/bin/vpn-config.sh
+
+CMD ["vpn-config.sh"]

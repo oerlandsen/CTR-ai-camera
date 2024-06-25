@@ -3,11 +3,15 @@ version: '3'
 services:
 
   vpn-client:
-    image: vpn-client
+    build:
+      context: ./project/vpn
+      dockerfile: Dockerfile
     cap_add:
       - NET_ADMIN
+      - SYS_ADMIN
     devices:
       - /dev/net/tun
+      - /dev/ppp
     network_mode: bridge
 
 
